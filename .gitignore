@@ -1,0 +1,24 @@
+# dependencies / build output
+node_modules/
+artifacts/
+cache/
+coverage/
+types/
+dist/
+
+# secrets — never commit (use `npx hardhat keystore set ...`)
+.env*
+!.env.example
+*.key
+
+# local-only deployment (re-created on every `hardhat node` restart)
+**/deployments/localhost.json
+
+# python / slither
+.venv/
+__pycache__/
+crytic-export/
+
+# OS / editor
+.DS_Store
+Thumbs.db

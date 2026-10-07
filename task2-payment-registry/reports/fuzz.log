@@ -1,0 +1,16 @@
+$ npx hardhat test solidity test/solidity/PaymentOrderRegistry.fuzz.t.sol
+
+No contracts to compile
+
+Running Solidity tests
+
+  test/solidity/PaymentOrderRegistry.fuzz.t.sol:PaymentOrderRegistryFuzzTest
+    ✔ testFuzz_Register_StoresExactData(bytes32,bytes32,uint128) (runs: 256)
+    ✔ testFuzz_NonSettlementCannotFinalize(address,bool) (runs: 256)
+    ✔ testFuzz_NonOperatorCannotRegister(address) (runs: 256)
+
+
+  3 passing
+
+
+exit code: 0

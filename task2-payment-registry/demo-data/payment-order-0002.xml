@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  СИНТЕТИЧЕСКИЙ ТЕСТОВЫЙ ДОКУМЕНТ (ПР №3, вариант 1). Все данные ВЫМЫШЛЕНЫ.
+  Сценарий отклонения: счёт получателя закрыт (ISO 20022 reason code AC04).
+  В блокчейн попадает ТОЛЬКО keccak256-хеш этого файла.
+-->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>DEMO-MSG-0002</MsgId>
+      <CreDtTm>2026-10-06T11:30:00+05:00</CreDtTm>
+      <NbOfTxs>1</NbOfTxs>
+      <SttlmInf><SttlmMtd>CLRG</SttlmMtd></SttlmInf>
+    </GrpHdr>
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>DEMO-INSTR-0002</InstrId>
+        <EndToEndId>DEMO-E2E-0002</EndToEndId>
+      </PmtId>
+      <IntrBkSttlmAmt Ccy="KZT">4750000.00</IntrBkSttlmAmt>
+      <IntrBkSttlmDt>2026-10-06</IntrBkSttlmDt>
+      <Dbtr><Nm>ТОО Демо-Плательщик</Nm></Dbtr>
+      <DbtrAcct><Id><IBAN>KZ00DEMO0000000000001</IBAN></Id></DbtrAcct>
+      <DbtrAgt><FinInstnId><BICFI>DEMOKZKA</BICFI></FinInstnId></DbtrAgt>
+      <CdtrAgt><FinInstnId><BICFI>TESTKZKA</BICFI></FinInstnId></CdtrAgt>
+      <Cdtr><Nm>ИП Демо-Закрытый-Счёт</Nm></Cdtr>
+      <CdtrAcct><Id><IBAN>KZ00TEST0000000000099</IBAN></Id></CdtrAcct>
+      <RmtInf><Ustrd>Оплата по счёту DEMO-002 (тестовые данные)</Ustrd></RmtInf>
+    </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
+</Document>

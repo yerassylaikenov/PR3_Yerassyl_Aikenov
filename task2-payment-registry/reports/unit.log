@@ -1,0 +1,34 @@
+$ npx hardhat test solidity test/solidity/PaymentOrderRegistry.unit.t.sol
+
+No contracts to compile
+
+Running Solidity tests
+
+  test/solidity/PaymentOrderRegistry.unit.t.sol:PaymentOrderRegistryUnitTest
+    ✔ test_VerifyDocument_TrueForOriginal_FalseForTampered()
+    ✔ test_UnknownPayment_RevertsNotFound()
+    ✔ test_Register_StoresDataAndEmitsEvents()
+    ✔ test_Register_RevertsWhen_ZeroPaymentId()
+    ✔ test_Register_RevertsWhen_ZeroDocHash()
+    ✔ test_Register_RevertsWhen_ZeroAmount()
+    ✔ test_Register_RevertsWhen_ReusingCancelledId()
+    ✔ test_Register_RevertsWhen_Duplicate()
+    ✔ test_Register_RevertsWhen_CallerHasNoOperatorRole()
+    ✔ test_Register_AcceptsBoundaryAmounts()
+    ✔ test_Pause_BlocksWrites_OnlyAdminCanPause()
+    ✔ test_MarkRejected_StoresReasonAndEmits()
+    ✔ test_MarkRejected_RevertsWhen_ZeroReasonCode()
+    ✔ test_MarkExecuted_UpdatesStatusAndEmits()
+    ✔ test_MarkExecuted_RevertsWhen_SelfSettlement()
+    ✔ test_MarkExecuted_RevertsWhen_CallerHasNoSettlementRole()
+    ✔ test_FinalStatuses_CannotTransition()
+    ✔ test_Constructor_RevertsOnZeroAdmin()
+    ✔ test_Constructor_GrantsAdminRole()
+    ✔ test_Cancel_RevertsWhen_NotInitiator()
+    ✔ test_AdminWithoutOperationalRole_CannotRegisterOrSettle()
+
+
+  21 passing
+
+
+exit code: 0
