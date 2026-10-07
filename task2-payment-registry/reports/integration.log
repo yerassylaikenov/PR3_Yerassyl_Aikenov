@@ -5,12 +5,12 @@ No contracts to compile
 Running node:test tests
 
   PaymentOrderRegistry (integration, viem + node:test)
-    ✔ full flow: register (operator) -> markExecuted (settlement) with events (81ms)
+    ✔ full flow: register (operator) -> markExecuted (settlement) with events (322ms)
     ✔ reverts with SelfSettlementForbidden when the initiator tries to settle
     ✔ verifyDocument: true for demo-data/payment-order-0001.xml, false for tampered content
 
 
-  3 passing (4590ms)
+  3 passing (21576ms)
 
 
 

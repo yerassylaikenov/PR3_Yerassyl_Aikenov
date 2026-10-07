@@ -1,6 +1,6 @@
 # TEST SUMMARY — PaymentOrderRegistry (Задание 2)
 
-Сгенерировано: 2026-10-07T08:27:57.078Z · Node v24.13.0 · `node scripts/run-and-log.mjs`
+Сгенерировано: 2026-10-07T08:42:04.188Z · Node v24.13.0 · `node scripts/run-and-log.mjs`
 
 ## Этапы
 
