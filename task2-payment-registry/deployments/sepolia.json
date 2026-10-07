@@ -1,0 +1,103 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "contract": "PaymentOrderRegistry",
+  "address": "0x83328cc06A4337E7695b1045EdC11D538F862674",
+  "admin": "0xcf8cd8d95432b90d22975481b3c25a1f4f72a713",
+  "deployTxHash": "0x71d6b55e92fed5c7a20f914e70039163f56a68141221f20ed79ba759fb67379d",
+  "blockNumber": 11863985,
+  "gasUsed": "6619888",
+  "deployedAt": "2026-10-07T15:49:29.978Z",
+  "interactions": [
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "3a",
+      "function": "grantRole(OPERATOR_ROLE, operator)",
+      "from": "0xcf8cd8d95432b90d22975481b3c25a1f4f72a713",
+      "txHash": "0xde79c49998a9ac59f21ab4b3359fb4f5a535f63b46b815cfb8d095873eef2ea6",
+      "block": 11863991,
+      "status": "success"
+    },
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "3b",
+      "function": "grantRole(SETTLEMENT_ROLE, settlement)",
+      "from": "0xcf8cd8d95432b90d22975481b3c25a1f4f72a713",
+      "txHash": "0x3163e7c626a31f758b3a1527f1b9e6c54d6d4d9641bfc7230fe8ad60a1e03799",
+      "block": 11863992,
+      "status": "success"
+    },
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "4",
+      "function": "top-up operator (0.003 ETH)",
+      "from": "0xcf8cd8d95432b90d22975481b3c25a1f4f72a713",
+      "txHash": "0xdca2cb9b0567dff05976d4f89f154cb4d5449d730550058c8e97fd735e1e41be",
+      "block": 11863993,
+      "status": "success"
+    },
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "4",
+      "function": "top-up settlement (0.003 ETH)",
+      "from": "0xcf8cd8d95432b90d22975481b3c25a1f4f72a713",
+      "txHash": "0x3ed5ae434841bb3d0263456a99b9ecdad71478840a3badcd64e3b5d0cf338f51",
+      "block": 11863994,
+      "status": "success"
+    },
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "6a",
+      "function": "registerPayment(id1, docHash1, 12500000000)",
+      "from": "0x8390a5b2d1077b21679b4ca2bff96922818d4127",
+      "txHash": "0x13775e5b4a46a2dcec80b317462eb0ceab7377ffad4b31d6f23bf0dbc116120b",
+      "block": 11863995,
+      "status": "success"
+    },
+    {
+      "run": "run-1 (before gas-buffer fix; recorded from console output)",
+      "step": "6b",
+      "function": "markExecuted(id1) — out of gas (gasUsed == gasLimit 149321), node underestimated gas",
+      "from": "0x39ae003c95afee14e2fd7e386608d6e04e303ab5",
+      "txHash": "0xf9c3fedeaf24dbee35e6096ff72c83218d239e187976b6d8709c11143458e321",
+      "block": 11863996,
+      "status": "reverted"
+    },
+    {
+      "run": "2026-10-07T15:55:03.319Z",
+      "step": "6a",
+      "function": "registerPayment(id1, docHash1, 12500000000)",
+      "from": "0x8390a5b2d1077b21679b4ca2bff96922818d4127",
+      "txHash": "0x7b8526c66891393c54da6ed7638954b026e71d69cbf462322418ea5a35cdfa50",
+      "block": 11864014,
+      "status": "success"
+    },
+    {
+      "run": "2026-10-07T15:55:03.319Z",
+      "step": "6b",
+      "function": "markExecuted(id1)",
+      "from": "0x39ae003c95afee14e2fd7e386608d6e04e303ab5",
+      "txHash": "0xd57dad73f468275d23be7e558c2feed853ea757bd0512ea0df4c0e88685eb04b",
+      "block": 11864015,
+      "status": "success"
+    },
+    {
+      "run": "2026-10-07T15:55:03.319Z",
+      "step": "7a",
+      "function": "registerPayment(id2, docHash2, 475000000)",
+      "from": "0x8390a5b2d1077b21679b4ca2bff96922818d4127",
+      "txHash": "0x15717949aefd53fc46c0f347af4db33a6dd18f7b9ed458d94b29ec431fdf8548",
+      "block": 11864016,
+      "status": "success"
+    },
+    {
+      "run": "2026-10-07T15:55:03.319Z",
+      "step": "7b",
+      "function": "markRejected(id2, \"AC04\")",
+      "from": "0x39ae003c95afee14e2fd7e386608d6e04e303ab5",
+      "txHash": "0x62fb3d62db54244236f634d71b00b2ab47b3795766620e593a45927a6154b7c2",
+      "block": 11864017,
+      "status": "success"
+    }
+  ]
+}

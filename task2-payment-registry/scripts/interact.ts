@@ -32,6 +32,14 @@ import {
 const MIN_ROLE_BALANCE = parseEther("0.002");
 const TOP_UP_AMOUNT = parseEther("0.003");
 const SEPOLIA_CHAIN_ID = 11155111;
+// Запас газа сверх оценки узла: в Sepolia eth_estimateGas может занижать оценку,
+// и транзакция падает с out-of-gas (gasUsed == gasLimit). Неизрасходованный газ не списывается.
+const GAS_BUFFER_PERCENT = 30n;
+
+async function withGasBuffer(estimate: Promise<bigint>): Promise<bigint> {
+  const gas = await estimate;
+  return gas + (gas * GAS_BUFFER_PERCENT) / 100n;
+}
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DOC_1 = path.join(ROOT, "demo-data", "payment-order-0001.xml");
@@ -119,6 +127,13 @@ async function main() {
 
   const runId = new Date().toISOString();
   const interactions: Interaction[] = [];
+  const previousInteractions = deployment.interactions ?? [];
+  // сохраняем хеши после КАЖДОЙ транзакции — даже при сбое на середине сценария данные не теряются
+  const persist = () =>
+    writeFile(
+      deploymentsFile,
+      JSON.stringify({ ...deployment, interactions: [...previousInteractions, ...interactions] }, null, 2) + "\n",
+    );
 
   console.log("=== PaymentOrderRegistry: interaction scenario ===");
   console.log(`network    : ${networkName} (chainId ${chainId})`);
@@ -141,6 +156,7 @@ async function main() {
       status: receipt.status,
     };
     interactions.push(record);
+    await persist();
     console.log(`[${step}] ${fn}`);
     console.log(`      from ${from}`);
     console.log(`      tx ${hash} | block ${receipt.blockNumber} | ${receipt.status}`);
@@ -154,13 +170,19 @@ async function main() {
     console.log("[3a] grantRole(OPERATOR_ROLE) — skipped, operator already has the role");
   } else {
     await send("3a", "grantRole(OPERATOR_ROLE, operator)", admin,
-      registry.write.grantRole([OPERATOR_ROLE, operator], { account: admin }));
+      registry.write.grantRole([OPERATOR_ROLE, operator], {
+        account: admin,
+        gas: await withGasBuffer(registry.estimateGas.grantRole([OPERATOR_ROLE, operator], { account: admin })),
+      }));
   }
   if (await registry.read.hasRole([SETTLEMENT_ROLE, settlement])) {
     console.log("[3b] grantRole(SETTLEMENT_ROLE) — skipped, settlement already has the role");
   } else {
     await send("3b", "grantRole(SETTLEMENT_ROLE, settlement)", admin,
-      registry.write.grantRole([SETTLEMENT_ROLE, settlement], { account: admin }));
+      registry.write.grantRole([SETTLEMENT_ROLE, settlement], {
+        account: admin,
+        gas: await withGasBuffer(registry.estimateGas.grantRole([SETTLEMENT_ROLE, settlement], { account: admin })),
+      }));
   }
 
   // 4. Sepolia: газ оператору и расчётному центру с кошелька admin
@@ -194,15 +216,28 @@ async function main() {
 
   // 6. register -> markExecuted
   await send("6a", "registerPayment(id1, docHash1, 12500000000)", operator,
-    registry.write.registerPayment([id1, docHash1, 12_500_000_000n], { account: operator }));
+    registry.write.registerPayment([id1, docHash1, 12_500_000_000n], {
+      account: operator,
+      gas: await withGasBuffer(registry.estimateGas.registerPayment([id1, docHash1, 12_500_000_000n], { account: operator })),
+    }));
   await send("6b", "markExecuted(id1)", settlement,
-    registry.write.markExecuted([id1], { account: settlement }));
+    registry.write.markExecuted([id1], {
+      account: settlement,
+      gas: await withGasBuffer(registry.estimateGas.markExecuted([id1], { account: settlement })),
+    }));
 
   // 7. register -> markRejected("AC04")
+  const reasonAC04 = stringToHex("AC04", { size: 32 });
   await send("7a", "registerPayment(id2, docHash2, 475000000)", operator,
-    registry.write.registerPayment([id2, docHash2, 475_000_000n], { account: operator }));
+    registry.write.registerPayment([id2, docHash2, 475_000_000n], {
+      account: operator,
+      gas: await withGasBuffer(registry.estimateGas.registerPayment([id2, docHash2, 475_000_000n], { account: operator })),
+    }));
   await send("7b", 'markRejected(id2, "AC04")', settlement,
-    registry.write.markRejected([id2, stringToHex("AC04", { size: 32 })], { account: settlement }));
+    registry.write.markRejected([id2, reasonAC04], {
+      account: settlement,
+      gas: await withGasBuffer(registry.estimateGas.markRejected([id2, reasonAC04], { account: settlement })),
+    }));
 
   const p1 = await registry.read.getPayment([id1]);
   const p2 = await registry.read.getPayment([id2]);
@@ -246,8 +281,7 @@ async function main() {
   console.log(`totalRegistered = ${await registry.read.totalRegistered()}`);
 
   // 10. сохранить хеши и вывести markdown-таблицу
-  deployment.interactions = [...(deployment.interactions ?? []), ...interactions];
-  await writeFile(deploymentsFile, JSON.stringify(deployment, null, 2) + "\n");
+  await persist();
 
   console.log("");
   console.log(`Saved ${interactions.length} interaction tx hashes to deployments/${networkName}.json`);

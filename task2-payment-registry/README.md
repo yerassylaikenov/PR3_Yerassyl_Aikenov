@@ -150,6 +150,8 @@ npm run compile
 
 ## Развёртывание в Sepolia
 
+> **Уже развёрнуто:** [`0x83328cc06A4337E7695b1045EdC11D538F862674`](https://sepolia.etherscan.io/address/0x83328cc06A4337E7695b1045EdC11D538F862674). Все хеши — в `deployments/sepolia.json` и в `REPORT_TASK2.md`, раздел 6. Тестовые кошельки этого развёртывания лежат в development keystore Hardhat на этом компьютере, поэтому `npm run accounts:sepolia` и `npm run interact:sepolia` работают без пароля.
+
 Секреты хранятся **только** в зашифрованном Hardhat keystore. `.env` не используется.
 
 1. Создать 3 тестовых кошелька: admin, operator, settlement. Для этого выполнить `npm run wallet:new` три раза (или взять 3 новых тестовых аккаунта MetaMask).

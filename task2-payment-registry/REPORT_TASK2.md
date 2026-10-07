@@ -181,22 +181,63 @@ npm run interact:local  # запускался 2 раза подряд — об�
 
 ## 6. Развёртывание в Sepolia
 
-Команды и настройка keystore — в README, раздел «Развёртывание в Sepolia». После `npm run deploy:sepolia` и `npm run interact:sepolia` значения берутся из вывода скриптов и из `deployments/sepolia.json`.
+```
+npm run deploy:sepolia
+npm run interact:sepolia
+```
+
+Данные — из вывода скриптов и [deployments/sepolia.json](deployments/sepolia.json). Все статусы перепроверены напрямую через RPC (`eth_getTransactionReceipt`).
 
 | Параметр | Значение |
 |---|---|
-| Адрес контракта | `<заполнить после npm run deploy:sepolia>` — https://sepolia.etherscan.io/address/<адрес> |
-| Deploy tx hash | `<заполнить после npm run deploy:sepolia>` — https://sepolia.etherscan.io/tx/<hash> |
-| Interaction tx 1 — `registerPayment` | `<заполнить после npm run interact:sepolia>` |
-| Interaction tx 2 — `markExecuted` | `<заполнить после npm run interact:sepolia>` |
-| Interaction tx 3 — `registerPayment` | `<заполнить после npm run interact:sepolia>` |
-| Interaction tx 4 — `markRejected` | `<заполнить после npm run interact:sepolia>` |
+| Сеть | Ethereum Sepolia, chainId 11155111 |
+| Адрес контракта | [`0x83328cc06A4337E7695b1045EdC11D538F862674`](https://sepolia.etherscan.io/address/0x83328cc06A4337E7695b1045EdC11D538F862674) |
+| Deploy tx hash | [`0x71d6b55e92fed5c7a20f914e70039163f56a68141221f20ed79ba759fb67379d`](https://sepolia.etherscan.io/tx/0x71d6b55e92fed5c7a20f914e70039163f56a68141221f20ed79ba759fb67379d) |
+| Блок развёртывания | 11863985 |
+| admin (только `DEFAULT_ADMIN_ROLE`) | [`0xCf8CD8D95432B90d22975481B3C25A1f4f72A713`](https://sepolia.etherscan.io/address/0xCf8CD8D95432B90d22975481B3C25A1f4f72A713) |
+| operator (только `OPERATOR_ROLE`) | [`0x8390a5B2D1077b21679b4cA2bFF96922818d4127`](https://sepolia.etherscan.io/address/0x8390a5B2D1077b21679b4cA2bFF96922818d4127) |
+| settlement (только `SETTLEMENT_ROLE`) | [`0x39ae003c95AfEe14e2FD7E386608D6E04E303Ab5`](https://sepolia.etherscan.io/address/0x39ae003c95AfEe14e2FD7E386608D6E04E303Ab5) |
+| Исходный код проверен | [Blockscout](https://eth-sepolia.blockscout.com/address/0x83328cc06A4337E7695b1045EdC11D538F862674#code), [Sourcify](https://sourcify.dev/server/repo-ui/11155111/0x83328cc06A4337E7695b1045EdC11D538F862674) |
 
-Скрипт `interact.ts` в конце печатает готовую markdown-таблицу со ссылками на Etherscan — её можно вставить сюда целиком.
+### Транзакции взаимодействия (основной сценарий)
+
+| Шаг | Функция | От | Tx hash | Блок | Статус |
+|---|---|---|---|---|---|
+| 6a | `registerPayment(id1, docHash1, 12500000000)` | operator | [`0x7b8526c6…cdfa50`](https://sepolia.etherscan.io/tx/0x7b8526c66891393c54da6ed7638954b026e71d69cbf462322418ea5a35cdfa50) | 11864014 | success |
+| 6b | `markExecuted(id1)` | settlement | [`0xd57dad73…85eb04b`](https://sepolia.etherscan.io/tx/0xd57dad73f468275d23be7e558c2feed853ea757bd0512ea0df4c0e88685eb04b) | 11864015 | success |
+| 7a | `registerPayment(id2, docHash2, 475000000)` | operator | [`0x15717949…fdf8548`](https://sepolia.etherscan.io/tx/0x15717949aefd53fc46c0f347af4db33a6dd18f7b9ed458d94b29ec431fdf8548) | 11864016 | success |
+| 7b | `markRejected(id2, "AC04")` | settlement | [`0x62fb3d62…6154b7c2`](https://sepolia.etherscan.io/tx/0x62fb3d62db54244236f634d71b00b2ab47b3795766620e593a45927a6154b7c2) | 11864017 | success |
+
+Итоговое состояние: `id1` — **Executed**, `id2` — **Rejected**, `settledBy` = расчётный центр. Дополнительно проверено:
+- `verifyDocument(id1, оригинал)` = **true**, для изменённого документа — **false**;
+- симуляция `markExecuted` от оператора → `AccessControlUnauthorizedAccount(operator, SETTLEMENT_ROLE)`;
+- симуляция `registerPayment` от admin → `AccessControlUnauthorizedAccount(admin, OPERATOR_ROLE)`;
+- admin не имеет операционных ролей.
+
+### Подготовительные транзакции (первый запуск)
+
+| Шаг | Функция | Tx hash | Блок | Статус |
+|---|---|---|---|---|
+| 3a | `grantRole(OPERATOR_ROLE, operator)` | [`0xde79c499…eef2ea6`](https://sepolia.etherscan.io/tx/0xde79c49998a9ac59f21ab4b3359fb4f5a535f63b46b815cfb8d095873eef2ea6) | 11863991 | success |
+| 3b | `grantRole(SETTLEMENT_ROLE, settlement)` | [`0x3163e7c6…1e03799`](https://sepolia.etherscan.io/tx/0x3163e7c626a31f758b3a1527f1b9e6c54d6d4d9641bfc7230fe8ad60a1e03799) | 11863992 | success |
+| 4 | пополнение operator 0.003 ETH | [`0xdca2cb9b…e41be`](https://sepolia.etherscan.io/tx/0xdca2cb9b0567dff05976d4f89f154cb4d5449d730550058c8e97fd735e1e41be) | 11863993 | success |
+| 4 | пополнение settlement 0.003 ETH | [`0x3ed5ae43…338f51`](https://sepolia.etherscan.io/tx/0x3ed5ae434841bb3d0263456a99b9ecdad71478840a3badcd64e3b5d0cf338f51) | 11863994 | success |
+| 6a | `registerPayment` | [`0x13775e5b…116120b`](https://sepolia.etherscan.io/tx/0x13775e5b4a46a2dcec80b317462eb0ceab7377ffad4b31d6f23bf0dbc116120b) | 11863995 | success |
+| 6b | `markExecuted` | [`0xf9c3fede…458e321`](https://sepolia.etherscan.io/tx/0xf9c3fedeaf24dbee35e6096ff72c83218d239e187976b6d8709c11143458e321) | 11863996 | **reverted (out of gas)** |
+
+### Наблюдения при развёртывании в публичной сети
+
+1. **Нехватка газа в первом запуске.** Транзакция `markExecuted` отменилась из-за нехватки газа: `gasUsed` = `gasLimit` = 149 321. Узел занизил оценку (`eth_estimateGas`), при повторной оценке он вернул 159 360. Логика контракта не нарушена: откат не изменил состояние, платёж остался в статусе `Registered` — это видно и по ходу сценария.
+
+   **Исправление в скрипте:** `scripts/interact.ts` добавляет 30% запаса к оценке газа для каждой транзакции (`GAS_BUFFER_PERCENT`); неизрасходованный газ не списывается. Кроме того, хеши теперь сохраняются в `deployments/<network>.json` после каждой транзакции. После исправления сценарий прошёл полностью.
+
+2. **Газ развёртывания в Sepolia выше, чем локально:** 6 619 888 против 963 400. Развёрнутый байткод идентичен локальному артефакту — 4070 байт, проверено через `eth_getCode`. Разница объясняется текущим набором правил расчёта газа в Sepolia; локальная сеть Hardhat считает газ по-другому. Цена газа — 1 gwei, стоимость развёртывания около 0.0066 тестового ETH.
+
+**Связь с Заданием 3.** Это же развёртывание — адрес **исправленного** контракта для Задания 3: файл `contracts/fixed/PaymentOrderRegistry.sol` побайтово совпадает с контрактом Задания 2.
 
 ## 7. Безопасность репозитория
 
-- **Секреты** (RPC URL, приватные ключи, ключ Etherscan) хранятся только в зашифрованном `hardhat-keystore` и читаются через `configVariable(...)`.
+- **Секреты** (RPC URL, приватные ключи, ключ Etherscan) хранятся только в Hardhat keystore вне репозитория и читаются через `configVariable(...)`. Для Sepolia созданы три отдельных **тестовых** кошелька без реальной ценности. Их ключи записаны напрямую в development keystore Hardhat (`%APPDATA%\hardhat-nodejs\Config\dev.keystore.json`), не выводились в консоль и не попадали в проект.
 - **`.env`** не используется и исключён в `.gitignore`.
 - **`npm run check:secrets`** проверяет git-файлы на ключи, мнемоники и `.env`. Результат: OK.
 - **Демо-документы** `demo-data/*.xml` — синтетические, данные явно вымышлены.
