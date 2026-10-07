@@ -162,7 +162,7 @@ npm run compile
    npx hardhat keystore set ETHERSCAN_API_KEY                 # опционально, для verify
    npx hardhat keystore list
    ```
-3. Пополнить тестовыми ETH через Sepolia faucet **только адрес admin**. Скрипт сам переведёт по 0.003 ETH оператору и расчётному центру, если у них меньше 0.002 ETH.
+3. Проверить адреса и балансы командой `npm run accounts:sepolia` (транзакции не отправляются). Пополнить тестовыми ETH через Sepolia faucet **только адрес admin**, то есть `[0]`. Скрипт сам переведёт по 0.003 ETH оператору и расчётному центру, если у них меньше 0.002 ETH.
 4. Запустить:
    ```
    npm run deploy:sepolia

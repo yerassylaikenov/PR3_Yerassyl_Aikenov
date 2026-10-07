@@ -19,6 +19,7 @@
     "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
     "interact:sepolia": "hardhat run scripts/interact.ts --network sepolia",
     "wallet:new": "hardhat run scripts/new-wallet.ts",
+    "accounts:sepolia": "hardhat run scripts/accounts.ts --network sepolia",
     "check:secrets": "node scripts/check-secrets.mjs"
   },
   "devDependencies": {
